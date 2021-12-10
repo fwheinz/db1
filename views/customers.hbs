@@ -1,0 +1,12 @@
+<table>
+<tr><th>CNO</th><th>Customer</th><th>Number of orders</th></tr>
+{{#each rows}}
+<tr>
+  <td>{{this.cno}}</td>
+  <td><a href="/customerdetail/{{this.cno}}">{{this.name}}</a></td>
+  <td>{{this.nrorders}}</td>
+</tr>
+{{/each}}
+</table>
+
+Search: <form method="get" action="/customersearch"><input type="text" name="search"></form>

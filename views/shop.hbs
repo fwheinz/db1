@@ -1,0 +1,11 @@
+
+<h1>Here are my goods:</h1>
+{{#each rows}}
+  <div class="shopitem">
+    <h2>{{this.name}}</h2><br>
+    <img src="/img/box.png" style="width: 100px">
+    <h2>For only: {{this.price}}</h2>
+  </div>
+{{/each}}
+<a href="/shop/{{next}}">Next items...</a>
+<h4>Choose wisely...</h4>
