@@ -41,7 +41,8 @@ app.get('/customersearch', (req, res) => {
 app.get('/shop/:offset', (req, res) => {
   var offset = Number(req.params.offset || 0);
   var q = 'SELECT * FROM products LIMIT 4 OFFSET '+offset;
-  doQuery(res, q, 'shop', { next: offset+4})
+  doQuery(res, q, 'shop', { next: offset+4, 
+                            prev: offset-4})
 })
 
 app.post('/', (req, res) => {
@@ -59,8 +60,10 @@ app.listen(port, () => {
 })
 
 function doQuery (res, query, template, params = {}) {
+  console.log("Doing query: "+query)
   client.query(query, 
     (err, data) => {
+      console.log("Answer")
       if (err) {
         err.query = query;
         err.msg = String(err);
