@@ -2,6 +2,9 @@
 const express = require('express')
 const app = express()
 const port = 80
+// Serve static files from folder 'static'
+app.use(express.static('static'))
+app.use(require('body-parser').urlencoded({ extended: false }))
 
 // Setup handlebars template engine
 const { engine } = require('express-handlebars')
@@ -10,8 +13,6 @@ app.set('view engine', 'hbs')
 app.engine('hbs', engine({
   layoutsDir: __dirname + '/views/layouts',
   extname: 'hbs' }))
-app.use(require('body-parser').urlencoded({ extended: false }))
-app.use(express.static('static'))
 
 // Setup database connection
 const connuri = process.env["DBCONN"];
@@ -21,23 +22,33 @@ const connectionString = connuri + '?sslmode=require'
 const client = new Client ({ connectionString })
 client.connect()
 
+/**********************************************************************/
+/*                                                                    */
+/*             Routes and views for the webshop application           */
+/*                                                                    */
+/**********************************************************************/ 
 
+
+// Render the page views/index.hbs
 app.get('/', (req, res) => {
   res.render("index");
 })
 
+// Render a list of all customers
 app.get('/customers', (req, res) => {
-  var q = 'SELECT cno, name, count(id) as nrorders FROM customers '+
+  var q = 'SELECT cno, nddame, count(id) as nrorders FROM customers '+
           'LEFT JOIN orders USING (cno) GROUP BY cno'
   doQuery(res, q, 'customers')
 })
 
+// Render customer search result
 app.get('/customersearch', (req, res) => {
   var q = 'SELECT cno, name FROM customers '+
           'WHERE name like \'%'+req.query.search+'%\''
   doQuery(res, q, 'customers');
 })
 
+// Show the items of the webshop at a given offset
 app.get('/shop/:offset', (req, res) => {
   var offset = Number(req.params.offset || 0);
   var q = 'SELECT * FROM products LIMIT 4 OFFSET '+offset;
@@ -45,25 +56,16 @@ app.get('/shop/:offset', (req, res) => {
                             prev: offset-4})
 })
 
-app.post('/', (req, res) => {
-  console.log(req.body);
-  client.query('SELECT generate_series(1, '+req.body.limit+') AS number',
-     (err, data) => {
-       res.render('index', {rows: data.rows});
-     })
-})
 
 
-
-app.listen(port, () => {
-  console.log(`App listening on ${port}`)
-})
-
+// Perform a database query
+// res:      the response context
+// query:    the database query to perform 
+// template: the template file to render (in directory "views")
+// params:   further parameters to pass to the template
 function doQuery (res, query, template, params = {}) {
-  console.log("Doing query: "+query)
   client.query(query, 
     (err, data) => {
-      console.log("Answer")
       if (err) {
         err.query = query;
         err.msg = String(err);
@@ -77,3 +79,8 @@ function doQuery (res, query, template, params = {}) {
     }
   )
 }
+
+// Open listen port and serve requests
+app.listen(port, () => {
+  console.log(`App listening on ${port}`)
+})

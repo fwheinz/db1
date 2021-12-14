@@ -1,0 +1,26 @@
+.shop {
+  margin: auto;
+}
+
+.fas {
+  font-size: 50px;
+  color: red;
+}
+
+.shopitem {
+  display: inline-block;
+  width: 250px;
+  height: 300px;
+  margin: 10px;
+  padding: 10px;
+  border: 4px blue solid;
+  background: #c0c0c0;
+}
+
+.error {
+  color: red;
+  border: 3px black solid;
+  font-size: 40px;
+  display: inline-block;
+  padding: 10px;
+}
