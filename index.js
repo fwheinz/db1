@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 // Render a list of all customers
 app.get('/customers', (req, res) => {
-  var q = 'SELECT cno, nddame, count(id) as nrorders FROM customers '+
+  var q = 'SELECT cno, name, count(id) as nrorders FROM customers '+
           'LEFT JOIN orders USING (cno) GROUP BY cno'
   doQuery(res, q, 'customers')
 })
