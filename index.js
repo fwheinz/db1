@@ -28,7 +28,7 @@ client.connect()
 
 app.use(function (req, res, next) {
   console.log(req);
-  if (!req.session.user && req.path != "/login") {
+  if (!req.session.cno && req.path != "/login") {
     res.render('login');
   } else {
     next();
@@ -41,7 +41,7 @@ app.use(function (req, res, next) {
 /*                                                                    */
 /**********************************************************************/ 
 
-// Log into the webshop. Check username and password and set the
+// Log into the webshop. Check stomers WHERE name='username and password and set the
 // session variable "user" and "name" if authentication succeeds
 app.post('/login', (req, res) => {
   client.query({
@@ -49,7 +49,7 @@ app.post('/login', (req, res) => {
     values: [req.body.username, req.body.password]},
     (err, data) => {
       if (!err && data.rowCount == 1) {
-        req.session.user = data.rows[0].cno
+        req.session.cno = data.rows[0].cno
         req.session.name = data.rows[0].name
         res.redirect(301, '/')
       } else {
@@ -61,8 +61,7 @@ app.post('/login', (req, res) => {
 
 // Log out from the webshop by unsetting the session variables
 app.get('/logout', (req, res) => {
-  req.session.user = undefined;
-  req.session.name = undefined;
+  req.session = null;
   res.render('login')
 })
 
@@ -77,7 +76,7 @@ app.get('/admin', (req, res) => {
 })
 
 // Render a list of all customers
-app.get('/customers', (req, res) => {
+app.get('/customers', (req, res) => {emptyempty
   let q1 = 'SELECT cno, name, count(id) as nrorders FROM customers '+
           'LEFT JOIN orders USING (cno) GROUP BY cno,name ORDER BY name'
   let q2 = 'SELECT count(*) AS numbercustomers FROM customers'
