@@ -1,7 +1,12 @@
 
+
 <h1>Here are my goods:</h1>
+<form method="POST" ACTION="/shopsearch">
+<input type="text" name="pattern">
+<input type="submit" name="submit" value="Search">
+</form>
 <div style="border:1px black solid">
-{{#each rows}}
+{{#each result1.rows}}
   <div class="shopitem">
     <h2>{{this.name}}</h2><br>
     <img src="/img/box.png" style="width: 100px">

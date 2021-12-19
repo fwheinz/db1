@@ -1,3 +1,7 @@
+body {
+  margin: 2%;
+}
+
 .shop {
   margin: auto;
 }
@@ -13,8 +17,12 @@
   height: 300px;
   margin: 10px;
   padding: 10px;
-  border: 4px blue solid;
-  background: #c0c0c0;
+  border: 4px lightblue solid;
+  background: #e0e0e0;
+}
+
+.shopitem h2 {
+  height: 50px;
 }
 
 .error {
