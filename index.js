@@ -26,6 +26,8 @@ const connectionString = connuri + '?sslmode=require'
 const client = new Client ({ connectionString })
 client.connect()
 
+// Log all requests for debugging and check, if we are logged in.
+// If not logged in, only access to the login page is permitted.
 app.use(function (req, res, next) {
   console.log(req);
   if (!req.session.cno && req.path != "/login") {
@@ -41,13 +43,15 @@ app.use(function (req, res, next) {
 /*                                                                    */
 /**********************************************************************/ 
 
-// Log into the webshop. Check stomers WHERE name='username and password and set the
-// session variable "user" and "name" if authentication succeeds
+// Log into the webshop. Check username and password and seth the
+// session variables "cno" and "name" if authentication succeeds
 app.post('/login', (req, res) => {
+  // Use a prepared statement for the query
   client.query({
     text: 'SELECT * FROM customers WHERE cno=$1 AND password=$2',
     values: [req.body.username, req.body.password]},
     (err, data) => {
+      // data.rowCount always contains the number of found rows
       if (!err && data.rowCount == 1) {
         req.session.cno = data.rows[0].cno
         req.session.name = data.rows[0].name
@@ -58,7 +62,6 @@ app.post('/login', (req, res) => {
     })
 })
  
-
 // Log out from the webshop by unsetting the session variables
 app.get('/logout', (req, res) => {
   req.session = null;
@@ -68,27 +71,6 @@ app.get('/logout', (req, res) => {
 // Render the page views/index.hbs
 app.get('/', (req, res) => {
   res.render('index', {name: req.session.name})
-})
-
-// Render the page views/admin.hbs
-app.get('/admin', (req, res) => {
-  res.render('admin', {name: "Aperture"})
-})
-
-// Render a list of all customers
-app.get('/customers', (req, res) => {emptyempty
-  let q1 = 'SELECT cno, name, count(id) as nrorders FROM customers '+
-          'LEFT JOIN orders USING (cno) GROUP BY cno,name ORDER BY name'
-  let q2 = 'SELECT count(*) AS numbercustomers FROM customers'
-  doQuery(res, 'customers', null, q1, q2)
-})
-
-// Render customer search result
-app.post('/customersearch', (req, res) => {
-  let search = req.body.search
-  let q = 'SELECT cno, name FROM customers '+
-          `WHERE name like '%${search}%'`
-  doQuery(res, 'customers', null, q);
 })
 
 // Show the items of the webshop at a given offset
@@ -113,11 +95,38 @@ app.post('/shopsearch', (req, res) => {
 
 
 
+// Administrative Pages
+
+// Render the page views/admin.hbs
+app.get('/admin', (req, res) => {
+  res.render('admin', {name: "Aperture"})
+})
+
+// Render a list of all customers
+app.get('/admin/customers', (req, res) => {emptyempty
+  let q1 = 'SELECT cno, name, count(id) as nrorders FROM customers '+
+          'LEFT JOIN orders USING (cno) GROUP BY cno,name ORDER BY name'
+  let q2 = 'SELECT count(*) AS numbercustomers FROM customers'
+  // Perform two queries. The first query has its results in "result1" and
+  // the second one in "result2"
+  doQuery(res, 'customers', null, q1, q2)
+})
+
+// Render customer search result
+app.post('/admin/customersearch', (req, res) => {
+  let search = req.body.search
+  let q = 'SELECT cno, name FROM customers '+
+          `WHERE name like '%${search}%'`
+  doQuery(res, 'customers', null, q);
+})
+
+
+
 // Perform a database query
 // res:      the response context
-// query:    the database query to perform 
 // template: the template file to render (in directory "views")
 // params:   further parameters to pass to the template
+// queries:  the database queries to perform (variadic) 
 function doQuery (res, template, params, ...queries) {
   _doQuery(res, template, params || {}, 1, queries)
 }
