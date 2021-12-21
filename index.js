@@ -57,6 +57,7 @@ app.post('/login', (req, res) => {
         req.session.name = data.rows[0].name
         res.redirect(301, '/')
       } else {
+        // See views/login.hbs
         res.render('login', {err: 'Authentication failed'})
       }
     })
@@ -65,11 +66,13 @@ app.post('/login', (req, res) => {
 // Log out from the webshop by unsetting the session variables
 app.get('/logout', (req, res) => {
   req.session = null;
+  // See views/login.hbs
   res.render('login')
 })
 
 // Render the page views/index.hbs
 app.get('/', (req, res) => {
+  // See views/index.hbs
   res.render('index', {name: req.session.name})
 })
 
@@ -79,6 +82,7 @@ app.get('/shop/:offset', (req, res) => {
   let offset = Number(req.params.offset)
   let q = { text: 'SELECT * FROM products LIMIT 4 OFFSET $1',
             values: [offset] }
+  // See views/shop.hbs
   doQuery(res, 'shop', { next: offset+4, 
                          prev: offset-4}, q)
 })
@@ -89,6 +93,7 @@ app.post('/shopsearch', (req, res) => {
   let offset = Number(req.params.offset)
   let pattern = req.body.pattern
   let q = `SELECT name,price FROM products WHERE name LIKE '%${pattern}%'`
+  // See views/shop.hbs
   doQuery(res, 'shop', { next: 0, 
                          prev: 0}, q)
 })
@@ -99,6 +104,7 @@ app.post('/shopsearch', (req, res) => {
 
 // Render the page views/admin.hbs
 app.get('/admin', (req, res) => {
+  // See views/admin.hbs
   res.render('admin', {name: "Aperture"})
 })
 
@@ -109,6 +115,7 @@ app.get('/admin/customers', (req, res) => {emptyempty
   let q2 = 'SELECT count(*) AS numbercustomers FROM customers'
   // Perform two queries. The first query has its results in "result1" and
   // the second one in "result2"
+  // See views/customers.hbs
   doQuery(res, 'customers', null, q1, q2)
 })
 
@@ -117,6 +124,7 @@ app.post('/admin/customersearch', (req, res) => {
   let search = req.body.search
   let q = 'SELECT cno, name FROM customers '+
           `WHERE name like '%${search}%'`
+  // See views/customers.hbs
   doQuery(res, 'customers', null, q);
 })
 
@@ -138,6 +146,7 @@ function _doQuery (res, template, params, depth, queries) {
         if (err) {
           err.query = JSON.stringify(query);
           err.msg = err.message
+          // See views/errors.hbs
           res.render('error', err)
         } else {
           console.log(JSON.stringify(data))
