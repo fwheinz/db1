@@ -109,7 +109,7 @@ app.get('/admin', (req, res) => {
 })
 
 // Render a list of all customers
-app.get('/admin/customers', (req, res) => {emptyempty
+app.get('/admin/customers', (req, res) => {
   let q1 = 'SELECT cno, name, count(id) as nrorders FROM customers '+
           'LEFT JOIN orders USING (cno) GROUP BY cno,name ORDER BY name'
   let q2 = 'SELECT count(*) AS numbercustomers FROM customers'

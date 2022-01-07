@@ -1,4 +1,4 @@
-Search: <form method="post" action="/customersearch"><input type="text" name="search"><input type="submit" name="submit" value="Search"></form>
+Search: <form method="post" action="/admin/customersearch"><input type="text" name="search"><input type="submit" name="submit" value="Search"></form>
 <br><br>
 {{#with result2.rows.[0]}}
 Anzahl Kunden: {{ numbercustomers }}
@@ -9,7 +9,7 @@ Anzahl Kunden: {{ numbercustomers }}
 {{#each result1.rows}}
 <tr>
   <td>{{this.cno}}</td>
-  <td><a href="/customerdetail/{{this.cno}}">{{this.name}}</a></td>
+  <td><a href="/admin/customerdetail/{{this.cno}}">{{this.name}}</a></td>
   <td>{{this.nrorders}}</td>
 </tr>
 {{/each}}
